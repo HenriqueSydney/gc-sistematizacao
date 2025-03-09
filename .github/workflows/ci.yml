@@ -29,7 +29,7 @@ jobs:
       - run: npm run test | tee test-results-${{ matrix.node }}.log
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           name: unit-test-results-${{ matrix.node }}
           path: test-results-${{ matrix.node }}.log
@@ -64,7 +64,7 @@ jobs:
           DATABASE_URL: "postgresql://docker:docker@localhost:5432/apisolid?schema=public"
 
       - name: Upload E2E Test Results
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-test-results
           path: e2e-test-results.log
@@ -89,7 +89,7 @@ jobs:
         run: cat results.sarif > sast-report.sarif || echo "No report generated"
 
       - name: Upload SAST Report
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           name: sast-report
           path: sast-report.sarif
