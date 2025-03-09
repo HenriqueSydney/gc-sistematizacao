@@ -85,8 +85,16 @@ jobs:
         uses: github/codeql-action/analyze@v3
         continue-on-error: true # Garante que erros não quebrem o pipeline
 
+      - name: Create directory for SARIF report
+        run: mkdir -p ./results
+
       - name: Export SAST Report
-        run: cat results.sarif > sast-report.sarif || echo "No report generated"
+        run: |
+          if [ -f ./results/results.sarif ]; then
+            cp ./results/results.sarif sast-report.sarif
+          else
+            echo "No SARIF report generated" > sast-report.sarif
+          fi
 
       - name: Upload SAST Report
         uses: actions/upload-artifact@v4
