@@ -31,8 +31,9 @@ jobs:
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: ./coverage/lcov-report/index.html
+          name: coverage-report-node-${{ matrix.node }}
+          path: ./coverage/
+          if-no-files-found: warn
 
   e2e-tests:
     name: Run E2E Tests
@@ -110,10 +111,10 @@ jobs:
           cache: "npm"
       - run: npm ci
 
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      # - name: Semantic Release
+      #   uses: cycjimmy/semantic-release-action@v4
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Generate tag
         id: generate_tag

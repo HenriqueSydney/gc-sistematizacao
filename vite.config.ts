@@ -8,7 +8,7 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', 'prisma/**/*'],
     coverage: {
       provider: 'v8', // ou 'c8', dependendo da sua escolha
-      reporter: ['text', 'html'], // Gera relatório no terminal e no HTML
+      reporter: ['text', 'html', 'lcov'], // Gera relatório no terminal e no HTML
       reportsDirectory: './coverage',
       exclude: ['prisma/**/*'], // Adicionando o exclude também para cobertura
     },
