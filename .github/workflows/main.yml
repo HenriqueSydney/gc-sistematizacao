@@ -54,10 +54,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: "npm"
 
       - run: npm ci
+      - run: npx prisma generate
 
       - run: npm run test:e2e
         env:
