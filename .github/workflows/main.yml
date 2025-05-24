@@ -239,7 +239,7 @@ jobs:
           
           # Aguardar um pouco para o droplet ficar totalmente disponível
           echo "Waiting for droplet to be fully ready..."
-          sleep 15
+          sleep 35
           
           # Adicionar o host às known_hosts
           ssh-keyscan -H ${{ steps.droplet.outputs.droplet_ip }} >> ~/.ssh/known_hosts 2>/dev/null || true
