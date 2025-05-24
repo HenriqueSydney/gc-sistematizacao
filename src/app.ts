@@ -6,6 +6,7 @@ import { env } from './env'
 import { usersRoutes } from './http/controllers/users/routes'
 import { gymsRoutes } from './http/controllers/gym/routes'
 import { checkInsRoutes } from './http/controllers/check-ins/routes'
+import { healthRoute } from './http/controllers/routes'
 
 export const app = fastify()
 
@@ -22,6 +23,7 @@ app.register(fastifyJwt, {
 
 app.register(fastifyCookie)
 
+app.register(healthRoute)
 app.register(usersRoutes)
 app.register(gymsRoutes)
 app.register(checkInsRoutes)

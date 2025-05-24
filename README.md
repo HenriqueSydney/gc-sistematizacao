@@ -35,7 +35,7 @@ No arquivo `docker-compose.yml`, utilizamos variáveis de ambiente para configur
 - `POSTGRESQL_DATABASE`: Nome do banco de dados PostgreSQL.
 - `DATABASE_URL`: URL de conexão da aplicação Node.js com o PostgreSQL.
 - `JWT_SECRET`: Segredo utilizado para geração de tokens JWT.
-- `env`: Define o ambiente de execução (ex: `production` ou `development`).
+- `NODE_ENV`: Define o ambiente de execução (ex: `production` ou `development`).
 
 ## Instruções de Uso
 

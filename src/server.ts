@@ -7,5 +7,5 @@ app
     port: env.PORT,
   })
   .then(() => {
-    console.log('HTTP Server Running! For testing')
+    console.log(`HTTP Server Running! Environment: ${env.NODE_ENV.toUpperCase()}! PORT: ${env.PORT}`)
   })
