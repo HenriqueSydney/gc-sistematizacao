@@ -150,7 +150,7 @@ jobs:
           push: false
           load: true
           tags: henriquelimadev/ci-cd-sistematizacao:${{ steps.generate_tag.outputs.sha }},henriquelimadev/ci-cd-sistematizacao:latest
-          outputs: type=docker,dest=/tmp/ci-cd-sistematizacao-image.tar
+          
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
@@ -167,6 +167,16 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
+      
+      - name: Export Docker image
+        run: docker save henriquelimadev/ci-cd-sistematizacao:${{ steps.generate_tag.outputs.sha }} -o /tmp/ci-cd-sistematizacao-image.tar
+    
+      - name: Upload Docker image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-cd-sistematizacao-docker-image
+          path: /tmp/ci-cd-sistematizacao-image.tar
+          retention-days: 5
     
       - name: Upload Docker image as artifact
         uses: actions/upload-artifact@v4
