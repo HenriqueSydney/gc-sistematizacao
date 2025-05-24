@@ -185,6 +185,7 @@ jobs:
   deploy-test:
     name: Deploy to Test Droplet
     runs-on: ubuntu-latest
+    needs: build-and-push
     outputs:
       droplet_ip: ${{ steps.droplet.outputs.droplet_ip }}
       droplet_id: ${{ steps.droplet.outputs.droplet_id }}
