@@ -176,14 +176,7 @@ jobs:
         with:
           name: ci-cd-sistematizacao-docker-image
           path: /tmp/ci-cd-sistematizacao-image.tar
-          retention-days: 5
-    
-      - name: Upload Docker image as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-cd-sistematizacao-docker-image
-          path: /tmp/ci-cd-sistematizacao-image.tar
-          retention-days: 5
+          retention-days: 5 
 
       - name: Push Docker image to DockerHub
         uses: docker/build-push-action@v5
