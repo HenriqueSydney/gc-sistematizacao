@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { app } from '@/app'
 import { createAndAuthenticateUser } from '@/utils/tests/create-and-authenticate-user'
 import { prisma } from '@/lib/prisma'
+import { env } from '@/env'
 
 describe('Validate Check-in (e2e)', () => {
   beforeAll(async () => {
@@ -37,7 +38,7 @@ describe('Validate Check-in (e2e)', () => {
     })
 
     const response = await request(app.server)
-      .patch(`/check-ins/${checkIn.id}/validate`)
+      .patch(`${env.BASE_URL}/check-ins/${checkIn.id}/validate`)
       .set('Authorization', `Bearer ${token}`)
       .send()
 

@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { app } from '@/app'
 import { createAndAuthenticateUser } from '@/utils/tests/create-and-authenticate-user'
 import { prisma } from '@/lib/prisma'
+import { env } from '@/env'
 
 describe('Check-in Metrics (e2e)', () => {
   beforeAll(async () => {
@@ -43,7 +44,7 @@ describe('Check-in Metrics (e2e)', () => {
     })
 
     const response = await request(app.server)
-      .get('/check-ins/metrics')
+      .get(`${env.BASE_URL}/check-ins/metrics`)
       .set('Authorization', `Bearer ${token}`)
       .send()
 

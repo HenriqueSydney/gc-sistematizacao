@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { app } from '@/app'
 import { createAndAuthenticateUser } from '@/utils/tests/create-and-authenticate-user'
 import { prisma } from '@/lib/prisma'
+import { env } from '@/env'
 
 describe('Create Check-in (e2e)', () => {
   beforeAll(async () => {
@@ -28,7 +29,7 @@ describe('Create Check-in (e2e)', () => {
     })
 
     const response = await request(app.server)
-      .post(`/gyms/${gym.id}/check-ins`)
+      .post(`${env.BASE_URL}/gyms/${gym.id}/check-ins`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         latitude: defaultGymLatitudeForTesting,

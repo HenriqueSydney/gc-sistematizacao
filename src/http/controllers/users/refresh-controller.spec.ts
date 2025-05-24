@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { app } from '@/app'
+import { env } from '@/env'
 
 describe('Refresh Token (e2e)', () => {
   beforeAll(async () => {
@@ -26,7 +27,7 @@ describe('Refresh Token (e2e)', () => {
     const cookies = authResponse.get('Set-Cookie')
 
     const response = await request(app.server)
-      .patch('/token/refresh')
+      .patch(`${env.BASE_URL}/token/refresh`)
       .set('Cookie', cookies)
       .send()
 

@@ -2,6 +2,7 @@ import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { app } from '@/app'
 import { createAndAuthenticateUser } from '@/utils/tests/create-and-authenticate-user'
+import { env } from '@/env'
 
 describe('Search Gyms (e2e)', () => {
   beforeAll(async () => {
@@ -18,7 +19,7 @@ describe('Search Gyms (e2e)', () => {
     const defaultGymLongitudeForTesting = -47.9867827
 
     await request(app.server)
-      .post('/gyms')
+      .post(`${env.BASE_URL}/gyms`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         title: 'JavaScript Gym',

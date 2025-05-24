@@ -2,6 +2,7 @@ import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { app } from '@/app'
 import { createAndAuthenticateUser } from '@/utils/tests/create-and-authenticate-user'
+import { env } from '@/env'
 
 describe('Create a Gym (e2e)', () => {
   beforeAll(async () => {
@@ -17,7 +18,7 @@ describe('Create a Gym (e2e)', () => {
     const defaultGymLatitudeForTesting = -15.8271869
     const defaultGymLongitudeForTesting = -47.9867827
     const response = await request(app.server)
-      .post('/gyms')
+      .post(`${env.BASE_URL}/gyms`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         title: 'JavaScript Gym',

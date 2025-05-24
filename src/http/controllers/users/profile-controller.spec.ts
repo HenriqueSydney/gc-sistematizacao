@@ -2,6 +2,7 @@ import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { app } from '@/app'
 import { createAndAuthenticateUser } from '@/utils/tests/create-and-authenticate-user'
+import { env } from '@/env'
 
 describe('Profile (e2e)', () => {
   beforeAll(async () => {
@@ -16,7 +17,7 @@ describe('Profile (e2e)', () => {
     const { token } = await createAndAuthenticateUser(app)
 
     const profileResponse = await request(app.server)
-      .get('/me')
+      .get(`${env.BASE_URL}/me`)
       .set('Authorization', `Bearer ${token}`)
       .send()
 
