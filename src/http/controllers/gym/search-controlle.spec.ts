@@ -19,7 +19,7 @@ describe('Search Gyms (e2e)', () => {
     const defaultGymLongitudeForTesting = -47.9867827
 
     await request(app.server)
-      .post(`${env.BASE_URL}/gyms`)
+      .post(`${env.BASE_TEST_URL}/gyms`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         title: 'JavaScript Gym',

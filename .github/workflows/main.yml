@@ -67,6 +67,7 @@ jobs:
         run: npm run test:integration
         env:
           JWT_SECRET: testing
+          BASE_TEST_URL: ''
           DATABASE_URL: "postgresql://docker:docker@localhost:5432/apisolid?schema=public"
 
   sast-scan:
@@ -241,7 +242,7 @@ jobs:
             -e DATABASE_URL=postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PWD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_DATABASE2 }}?schema=test&sslmode=require \
             -e NODE_ENV=test \
             -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            -e BASE_URL=http://${{ steps.droplet.outputs.droplet_ip }} \
+            -e BASE_TEST_URL=http://${{ steps.droplet.outputs.droplet_ip }} \
             henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}            
           EOF
 

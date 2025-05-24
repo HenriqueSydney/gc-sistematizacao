@@ -17,7 +17,7 @@ describe('Profile (e2e)', () => {
     const { token } = await createAndAuthenticateUser(app)
 
     const profileResponse = await request(app.server)
-      .get(`${env.BASE_URL}/me`)
+      .get(`${env.BASE_TEST_URL}/me`)
       .set('Authorization', `Bearer ${token}`)
       .send()
 

@@ -27,7 +27,7 @@ describe('Refresh Token (e2e)', () => {
     const cookies = authResponse.get('Set-Cookie')
 
     const response = await request(app.server)
-      .patch(`${env.BASE_URL}/token/refresh`)
+      .patch(`${env.BASE_TEST_URL}/token/refresh`)
       .set('Cookie', cookies)
       .send()
 

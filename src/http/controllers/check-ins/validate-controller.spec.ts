@@ -38,7 +38,7 @@ describe('Validate Check-in (e2e)', () => {
     })
 
     const response = await request(app.server)
-      .patch(`${env.BASE_URL}/check-ins/${checkIn.id}/validate`)
+      .patch(`${env.BASE_TEST_URL}/check-ins/${checkIn.id}/validate`)
       .set('Authorization', `Bearer ${token}`)
       .send()
 

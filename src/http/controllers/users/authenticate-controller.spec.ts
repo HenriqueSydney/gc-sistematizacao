@@ -13,7 +13,7 @@ describe('Authenticate (e2e)', () => {
   })
 
   it('should be able to authenticate', async () => {
-    await request(app.server).post(`${env.BASE_URL}/users`).send({
+    await request(app.server).post(`${env.BASE_TEST_URL}/users`).send({
       name: 'John Doe',
       email: 'johndoe@exemple.com',
       password: '123456',

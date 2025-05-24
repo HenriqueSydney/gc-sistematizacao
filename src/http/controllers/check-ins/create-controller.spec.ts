@@ -29,7 +29,7 @@ describe('Create Check-in (e2e)', () => {
     })
 
     const response = await request(app.server)
-      .post(`${env.BASE_URL}/gyms/${gym.id}/check-ins`)
+      .post(`${env.BASE_TEST_URL}/gyms/${gym.id}/check-ins`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         latitude: defaultGymLatitudeForTesting,
