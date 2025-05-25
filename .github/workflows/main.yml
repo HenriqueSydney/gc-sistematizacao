@@ -194,10 +194,10 @@ jobs:
       droplet_ip: ${{ steps.droplet.outputs.droplet_ip }}
       droplet_id: ${{ steps.droplet.outputs.droplet_id }}
     steps:
-      - name: Download build tag artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build-tag-${{ github.run_id }}
+      # - name: Download build tag artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: build-tag-${{ github.run_id }}
 
       # - name: Read image tag
       #   id: get_tag
