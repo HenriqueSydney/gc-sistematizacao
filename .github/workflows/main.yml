@@ -255,9 +255,8 @@ jobs:
 
       - name: Deploy Application
         run: |
-          ssh root@${{ steps.droplet.outputs.droplet_ip }} << EOF
-            apt-get update && apt-get install -y docker.io
-            docker pull henriquelimadev/ci-cd-sistematizacao::${{ steps.get_tag.outputs.tag }}
+          ssh root@${{ steps.droplet.outputs.droplet_ip }} << EOF           
+            docker pull henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}
             docker run -d --name my-app \
             -p 80:3000 \
             -e DATABASE_URL=postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PWD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_DATABASE2 }}?schema=test&sslmode=require \
