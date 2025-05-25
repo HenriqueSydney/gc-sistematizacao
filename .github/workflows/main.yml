@@ -272,8 +272,31 @@ jobs:
             -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
             -e BASE_TEST_URL='http://${{ steps.droplet.outputs.droplet_ip }}' \
             henriquelimadev/ci-cd-sistematizacao:latest
+          EOF  
+        
+      - name: Wait for Container to Initialize
+        run: |
+          echo "Waiting for container to initialize..."
+          sleep 15
+        
+      - name: Check Container Status and Logs
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} << 'EOF'
+          echo "=== CONTAINER STATUS ==="
+          docker ps -a --filter name=my-app
+          echo
+          echo "=== CONTAINER LOGS ==="
+          docker logs my-app
+          echo
+          echo "=== CONTAINER INSPECT (Network) ==="
+          docker inspect my-app --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
+          echo
+          echo "=== TESTING INTERNAL CONNECTIVITY ==="
+          curl -v http://localhost:80/ || echo "Port 80 not responding"
+          echo
+          echo "=== PROCESS CHECK ==="
+          netstat -tlnp | grep -E ':(80|3333)' || echo "No processes listening on ports 80 or 3333"
           EOF
-          
 
       - name: Wait for the application to be ready
         run: |
