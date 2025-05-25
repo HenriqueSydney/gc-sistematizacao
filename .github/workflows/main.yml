@@ -193,6 +193,7 @@ jobs:
     outputs:
       droplet_ip: ${{ steps.droplet.outputs.droplet_ip }}
       droplet_id: ${{ steps.droplet.outputs.droplet_id }}
+      droplet-created: ${{ steps.create-droplet.outputs.created }}
     steps:
       - name: Download build tag artifact
         uses: actions/download-artifact@v4
@@ -241,6 +242,7 @@ jobs:
           echo "Waiting for droplet to be fully ready..."
           sleep 35
           
+          echo "Starting Connection..."
           # Adicionar o host às known_hosts
           ssh-keyscan -H ${{ steps.droplet.outputs.droplet_ip }} >> ~/.ssh/known_hosts 2>/dev/null || true
           
@@ -263,6 +265,7 @@ jobs:
           EOF
 
       - name: Wait for the application to be ready
+        if: steps.create-droplet.outputs.created == 'true'
         run: |
           echo "Waiting for app to be ready..."
           for i in {1..10}; do
@@ -323,6 +326,7 @@ jobs:
     name: Destroy Droplet
     runs-on: ubuntu-latest
     needs: [e2e-test, dast-scan]
+    if: always()
     steps:
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
