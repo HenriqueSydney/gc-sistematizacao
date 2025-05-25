@@ -272,7 +272,8 @@ jobs:
             -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
             -e BASE_TEST_URL='http://${{ steps.droplet.outputs.droplet_ip }}' \
             henriquelimadev/ci-cd-sistematizacao:latest
-          EOF  
+          EOF
+
         
       - name: Wait for Container to Initialize
         run: |
