@@ -1,12 +1,22 @@
 FROM node:20-alpine AS base
 
-FROM base AS deps
+RUN apk add --no-cache \
+    openssl \
+    libstdc++ \
+    bash \
+    && addgroup -S app && adduser -S app -G app
+
 
 WORKDIR /app
+
+FROM base AS deps
+
+# WORKDIR /app
 
 COPY . .
 
 RUN npm ci
+run npx prisma generate
 
 FROM base AS builder
 
@@ -32,6 +42,6 @@ COPY --from=deps --chown=app:node /app/node_modules ./node_modules
 COPY --from=deps --chown=app:node /app/prisma ./prisma
 COPY --from=builder --chown=app:node /app/build ./build
 
-EXPOSE 3000
+EXPOSE 3333
 
 CMD ["npm", "run", "start"]
