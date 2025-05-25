@@ -250,33 +250,23 @@ jobs:
             ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@${{ steps.droplet.outputs.droplet_ip }} "echo SSH is ready" && break
             echo "SSH not ready yet... waiting 10 seconds..."
             sleep 10
-          done
-     
+          done     
 
       - name: Pull Docker Image
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} "
             docker pull henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}
           "
-        
-      - name: Remove Old Container
-        run: |
-          ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} "
-            docker stop my-app || true
-            docker rm my-app || true
-          "
-      #
+              
       - name: Run Docker Container
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} "
-            docker run -d --name my-app 
-            -p 80:3333 
-            -e DATABASE_URL=postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PWD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_DATABASE2 }}?schema=test&sslmode=require 
-            -e NODE_ENV=test 
-            -e JWT_SECRET=${{ secrets.JWT_SECRET }} 
-            -e BASE_TEST_URL=http://${{ steps.droplet.outputs.droplet_ip }} 
-            henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}
-            "
+          ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} "docker run -d --name my-app \
+            -p 80:3333 \
+            -e DATABASE_URL=postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PWD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_DATABASE2 }}?schema=test&sslmode=require \
+            -e NODE_ENV=test \
+            -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            -e BASE_TEST_URL=http://${{ steps.droplet.outputs.droplet_ip }} \
+            henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}"
           
 
       - name: Wait for the application to be ready
@@ -299,7 +289,7 @@ jobs:
     env:
       NODE_ENV: test
       JWT_SECRET: testing
-      BASE_URL: http://${{ needs.deploy-test.outputs.droplet_ip }}
+      BASE_TEST_URL: http://${{ needs.deploy-test.outputs.droplet_ip }}
       DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PWD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_DATABASE2 }}?schema=test&sslmode=require
     steps:
       - uses: actions/checkout@v4
