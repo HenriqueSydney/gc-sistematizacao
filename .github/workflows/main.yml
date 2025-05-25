@@ -252,6 +252,10 @@ jobs:
             sleep 10
           done     
 
+      - name: Configure Firewall  
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} "ufw allow 80/tcp && ufw reload"
+
       - name: Pull Docker Image
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} "
