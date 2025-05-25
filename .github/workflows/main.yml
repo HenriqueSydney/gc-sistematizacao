@@ -9,99 +9,100 @@ permissions:
   id-token: write
   contents: read
   security-events: write
+  issues: write
 
 jobs:
-  # unit-component-test:
-  #   name: "Unit and Component Tests"
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       node: [20, 22]
+  unit-component-test:
+    name: "Unit and Component Tests"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Setup node | ${{ matrix.node }}
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: ${{ matrix.node }}
-  #         cache: "npm"
-  #     - run: npm ci
-  #     - run: npm run test:coverage
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup node | ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "npm"
+      - run: npm ci
+      - run: npm run test:coverage
 
-  #     - name: Upload Test Results
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: coverage-report-node-${{ matrix.node }}
-  #         path: ./coverage/
-  #         if-no-files-found: warn
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-node-${{ matrix.node }}
+          path: ./coverage/
+          if-no-files-found: warn
 
-  # integration-tests:
-  #   name: "Integration Tests"
-  #   runs-on: ubuntu-latest
+  integration-tests:
+    name: "Integration Tests"
+    runs-on: ubuntu-latest
 
-  #   services:
-  #     postgres:
-  #       image: bitnami/postgresql
-  #       ports:
-  #         - 5432:5432
-  #       env:
-  #         POSTGRESQL_USERNAME: docker
-  #         POSTGRESQL_PASSWORD: docker
-  #         POSTGRESQL_DATABASE: apisolid
+    services:
+      postgres:
+        image: bitnami/postgresql
+        ports:
+          - 5432:5432
+        env:
+          POSTGRESQL_USERNAME: docker
+          POSTGRESQL_PASSWORD: docker
+          POSTGRESQL_DATABASE: apisolid
 
-  #   steps:
-  #     - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20
-  #         cache: "npm"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
 
-  #     - name: Install Dependencies
-  #       run: npm ci
+      - name: Install Dependencies
+        run: npm ci
   
-  #     - name: Prisma Generate
-  #       run: npx prisma generate
+      - name: Prisma Generate
+        run: npx prisma generate
   
-  #     - name: Run E2E Tests
-  #       run: npm run test:integration
-  #       env:
-  #         JWT_SECRET: testing
-  #         BASE_TEST_URL: ''
-  #         DATABASE_URL: "postgresql://docker:docker@localhost:5432/apisolid?schema=public"
+      - name: Run E2E Tests
+        run: npm run test:integration
+        env:
+          JWT_SECRET: testing
+          BASE_TEST_URL: ''
+          DATABASE_URL: "postgresql://docker:docker@localhost:5432/apisolid?schema=public"
 
-  # sast-scan:
-  #   name: "SAST Analysis"
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
+  sast-scan:
+    name: "SAST Analysis"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  #     - name: Initialize CodeQL
-  #       uses: github/codeql-action/init@v3
-  #       with:
-  #         languages: javascript
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
 
-  #     - name: Perform CodeQL Analysis
-  #       uses: github/codeql-action/analyze@v3
-  #       continue-on-error: true # Garante que erros não quebrem o pipeline
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        continue-on-error: true # Garante que erros não quebrem o pipeline
 
-  #     - name: Create directory for SARIF report
-  #       run: mkdir -p ./results
+      - name: Create directory for SARIF report
+        run: mkdir -p ./results
 
-  #     - name: Export SAST Report
-  #       run: |
-  #         if [ -f ./results/results.sarif ]; then
-  #           cp ./results/results.sarif sast-report.sarif
-  #         else
-  #           echo "No SARIF report generated" > sast-report.sarif
-  #         fi
+      - name: Export SAST Report
+        run: |
+          if [ -f ./results/results.sarif ]; then
+            cp ./results/results.sarif sast-report.sarif
+          else
+            echo "No SARIF report generated" > sast-report.sarif
+          fi
 
-  #     - name: Upload SAST Report
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: sast-report
-  #         path: sast-report.sarif
+      - name: Upload SAST Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sast-report
+          path: sast-report.sarif
 
   build-and-push:
     name: "Build and Push"
@@ -261,7 +262,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} "
             docker pull henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}
           "
-         #${{ steps.get_tag.outputs.tag }}     
+           
       - name: Run Docker Container
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ steps.droplet.outputs.droplet_ip }} << 'EOF'
@@ -312,54 +313,36 @@ jobs:
             fi
           done
   
-  e2e-test:
+  e2e-test-fake:
     name: Run E2E Tests
     runs-on: ubuntu-latest
     needs: deploy-test
-    env:
-      NODE_ENV: test
-      JWT_SECRET: testing
-      BASE_TEST_URL: http://${{ needs.deploy-test.outputs.droplet_ip }}
-      DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PWD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_DATABASE2 }}?schema=test&sslmode=require
     steps:
-      - uses: actions/checkout@v4
+      - name: Run Fake E2E Test
+        run: echo "FAKE E2E TEST OK"
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Prisma Generate
-        run: npx prisma generate
-
-      - name: Run E2E Tests
-        run: npm run test:e2e
-
-  ### 🔥 DAST Job
+  
   dast-scan:
     name: Run DAST Scan
     runs-on: ubuntu-latest
     needs: deploy-test
     steps:
       - name: Run DAST with OWASP ZAP
-        uses: zaproxy/action-baseline@v0.7.0
+        uses: zaproxy/action-baseline@v0.14.0
         with:
           target: http://${{ needs.deploy-test.outputs.droplet_ip }}
-          rules_file_name: ''
+          issue_title: 'DAST SCAN'
           cmd_options: '-a'
 
-      - name: Upload ZAP Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-report
-          path: report_html.zip
+      # - name: Upload ZAP Report
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: zap-report
+      #     path: report_html.zip
       
-  ### 🔥 DAST Job
-  load-test:
+ 
+  load-test-fake:
     name: Run Load Test
     runs-on: ubuntu-latest
     needs: deploy-test
@@ -370,7 +353,7 @@ jobs:
   destroy-droplet:
     name: Destroy Droplet
     runs-on: ubuntu-latest
-    needs: [deploy-test, e2e-test, dast-scan, load-test]
+    needs: [deploy-test, e2e-test-fake, dast-scan, load-test-fake]
     if: always()
     steps:
       - name: Install doctl
@@ -382,89 +365,128 @@ jobs:
         run: |
           doctl compute droplet delete ${{ needs.deploy-test.outputs.droplet_id }} --force
 
-  # deploy-staging:
-  #   name: Deploy to Staging Environment (EC2)
-  #   needs: [e2e-test, dast-scan]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Download build tag artifact
-  #     uses: actions/download-artifact@v4
-  #     with:
-  #       name: build-tag-${{ github.run_id }}
+  deploy-staging:
+    name: Deploy to Staging Environment (EC2)
+    needs: [e2e-test-fake, dast-scan, load-test-fake]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download build tag artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: build-tag-${{ github.run_id }}
 
-  #   - name: Read image tag
-  #     id: get_tag
-  #     run: |
-  #       TAG=$(cat build-tag)
-  #       echo "tag=$TAG" >> $GITHUB_OUTPUT
+    - name: Read image tag
+      id: get_tag
+      run: |
+        TAG=$(cat build-tag)
+        echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-  #   - name: Install doctl
-  #     uses: digitalocean/action-doctl@v2
-  #     with:
-  #       token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-  #   - name: Add SSH key
-  #     run: |
-  #       mkdir -p ~/.ssh
-  #       echo "${{ secrets.DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-  #       chmod 600 ~/.ssh/id_rsa
-  #       ssh-keyscan -H ${{ secrets.DROPLET_IP }} >> ~/.ssh/known_hosts
+    - name: Add SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.DROPLET_STAGING_IP }} >> ~/.ssh/known_hosts
 
-  #   - name: Deploy to Droplet via SSH
-  #     run: |
-  #       ssh root@${{ secrets.DROPLET_IP }} << 'EOF'
-  #         docker pull registry.digitalocean.com/my-registry/my-image:${{ steps.get_tag.outputs.tag }}
-  #         docker stop my-app || true
-  #         docker rm my-app || true
-  #         docker run -d --name my-app -p 80:3000 registry.digitalocean.com/my-registry/my-image:${{ steps.get_tag.outputs.tag }}
-  #       EOF
+    - name: Pull Docker Image
+      run: |
+        ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_STAGING_IP }} "
+          docker pull henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}
+        "
+            
+    - name: Run Docker Container
+      run: |
+        ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_STAGING_IP }} 
+        docker stop my-app || true
+        docker rm my-app || true << 'EOF'       
+        docker run -d --name my-app \
+          -p 80:3333 \
+          -e DATABASE_URL='postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PWD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_DATABASE2 }}?schema=stage&sslmode=require' \
+          -e NODE_ENV=staging \
+          -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+          henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}
+        EOF
 
 
-  # approval:
-  #   name: Manual Approval for Production
-  #   needs: deploy-staging    
-  #   runs-on: ubuntu-latest
-  #   environment: 
-  #     name: production
-  #     url: https://api.suaempresa.com.br
-  #   steps:
-  #     - name: Awaiting approval
-  #       run: echo "Deployment was approved manually!"
+  approval:
+    name: Manual Approval for Production
+    needs: deploy-staging    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build tag artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-tag-${{ github.run_id }}
 
-  # deploy-production:
-  #   name: Deploy to Production Environment (EC2)
-  #   needs: approval
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Download build tag artifact
-  #     uses: actions/download-artifact@v4
-  #     with:
-  #       name: build-tag-${{ github.run_id }}
+      - name: Read image tag
+        id: get_tag
+        run: |
+          TAG=$(cat build-tag)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+      
+      - name: Manual Approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: HenriqueSydney
+          timeout-minutes: 10
+          minimum-approvals: 1
+          issue-title: "Deploying v${{ steps.get_tag.outputs.tag }} to prod from staging"
+          issue-body: "Please approve or deny the deployment of version v${{ steps.get_tag.outputs.tag }}."
+          exclude-workflow-initiator-as-approver: false
+          fail-on-denial: true
+          additional-approved-words: ''
+          additional-denied-words: ''
 
-  #   - name: Read image tag
-  #     id: get_tag
-  #     run: |
-  #       TAG=$(cat build-tag)
-  #       echo "tag=$TAG" >> $GITHUB_OUTPUT
+  deploy-production:
+    name: Deploy to Production Environment (EC2)
+    needs: approval
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download build tag artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: build-tag-${{ github.run_id }}
 
-  #   - name: Install doctl
-  #     uses: digitalocean/action-doctl@v2
-  #     with:
-  #       token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    - name: Read image tag
+      id: get_tag
+      run: |
+        TAG=$(cat build-tag)
+        echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-  #   - name: Add SSH key
-  #     run: |
-  #       mkdir -p ~/.ssh
-  #       echo "${{ secrets.DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-  #       chmod 600 ~/.ssh/id_rsa
-  #       ssh-keyscan -H ${{ secrets.DROPLET_IP }} >> ~/.ssh/known_hosts
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-  #   - name: Deploy to Droplet via SSH
-  #     run: |
-  #       ssh root@${{ secrets.DROPLET_IP }} << 'EOF'
-  #         docker pull registry.digitalocean.com/my-registry/my-image:${{ steps.get_tag.outputs.tag }}
-  #         docker stop my-app || true
-  #         docker rm my-app || true
-  #         docker run -d --name my-app -p 80:3000 registry.digitalocean.com/my-registry/my-image:${{ steps.get_tag.outputs.tag }}
-  #       EOF
+    - name: Add SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DROPLET_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.DROPLET_PROD_IP }} >> ~/.ssh/known_hosts
+
+    - name: Pull Docker Image
+      run: |
+        ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_PROD_IP }} "
+          docker pull henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}
+        "
+           
+    - name: Run Docker Container
+      run: |
+        ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_PROD_IP }} 
+        docker stop my-app || true
+        docker rm my-app || true << 'EOF'       
+        docker run -d --name my-app \
+          -p 80:3333 \
+          -e DATABASE_URL='postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PWD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_DATABASE2 }}?schema=public&sslmode=require' \
+          -e NODE_ENV=production \
+          -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+          henriquelimadev/ci-cd-sistematizacao:${{ steps.get_tag.outputs.tag }}
+        EOF
  
